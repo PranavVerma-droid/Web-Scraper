@@ -117,10 +117,21 @@ def write_to_file(post, comments, subreddit):
     
     print(f"Data has been written to {filename}")
 
+def save_after_token(subreddit, after):
+    with open(f"{subreddit}_last_after.txt", "w") as f:
+        f.write(after if after else "")
+
+def load_after_token(subreddit):
+    try:
+        with open(f"{subreddit}_last_after.txt", "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return None
+
 def main():
     subreddit = str(input("Enter the subreddit to scrape: ")).strip()
      
-    after = None
+    after = load_after_token(subreddit)
     
     while True:
         try:
@@ -140,13 +151,16 @@ def main():
                 else:
                     print("No comments found for this post.")
                 
+                save_after_token(subreddit, after)  # Save the 'after' token after each post
+                
                 time.sleep(5)  # Wait for 5 seconds between posts
             
             print("Waiting before fetching the next post...")
             time.sleep(10)  # Wait for 10 seconds before fetching the next post
             
         except KeyboardInterrupt:
-            print("\nScraping interrupted by user. Exiting.")
+            print("\nScraping interrupted by user. Saving progress and exiting.")
+            save_after_token(subreddit, after)
             sys.exit(0)
         except Exception as e:
             print(f"An error occurred: {e}")
