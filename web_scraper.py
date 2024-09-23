@@ -65,8 +65,6 @@ def scrape_comments(permalink):
                     'score': comment['data']['score'],
                     'created_utc': comment['data']['created_utc']
                 })
-            if len(comments) == 7:
-                break
     
     return comments
 
@@ -102,16 +100,13 @@ def write_to_file(post, comments, subreddit):
         file.write("\n\n")
         
         if comments:
-            file.write(f"Top {len(comments)} comments:\n")
+            file.write(f"All comments ({len(comments)}):\n")
             for i, comment in enumerate(comments, 1):
                 file.write(f"Comment {i}:\n")
                 file.write(f"  Author: {comment['author']}\n")
                 file.write(f"  Comment: {comment['body']}\n")
                 file.write(f"  Score: {comment['score']}\n")
                 file.write(f"  Created UTC: {datetime.fromtimestamp(comment['created_utc'])}\n\n")
-            
-            if len(comments) < 7:
-                file.write(f"Note: This post has only {len(comments)} comments at the time of scraping.\n")
         else:
             file.write("No comments found for this post.\n")
     
